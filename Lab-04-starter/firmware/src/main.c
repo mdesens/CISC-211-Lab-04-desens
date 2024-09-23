@@ -485,7 +485,7 @@ int main ( void )
             isRTCExpired = false;
             isUSARTTxComplete = false;
 
-            uint32_t numPointsMax = 30;
+            uint32_t numPointsMax = 40;
             uint32_t pointsScored = numPointsMax * totalPassCount / totalTests;
             
             snprintf((char*)uartTxBuffer, MAX_PRINT_LEN,
