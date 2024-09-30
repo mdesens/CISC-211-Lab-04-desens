@@ -39,3 +39,4 @@
 *.hex
 *.s~
 *.c~
+*.DS_store
