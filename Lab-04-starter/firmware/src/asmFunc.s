@@ -71,6 +71,111 @@ asmFunc:
  
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
+    
+    /* START - INITIALIZE OUTPUT VARIABLES TO 0 */
+    
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r1, =transaction 
+    // Set r2 to the value, 0
+    MOVS r2, 0
+    // Copy data from r2 to transaction 
+    STR r2, [r1] 
+    
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r1, =eat_out 
+    // Copy data from r2 (value of 0) to eat_out
+    STR r2, [r1] 
+    
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r1, =stay_in 
+    // Copy data from r2 (value of 0) to stay_in 
+    STR r2, [r1] 
+    
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r1, =eat_ice_cream 
+    // Copy data from r2 (value of 0) to eat_ice_cream 
+    STR r2, [r1] 
+    
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r1, =we_have_a_problem 
+    // Copy data from r2 (value of 0) to we_have_a_problem 
+    STR r2, [r1] 
+    
+    /* END - INITIALIZE OUTPUT VARIABLES TO 0 */
+
+    
+    /* START - PERFORM TRANSACTION */
+     
+    // LOGIC - CHECK TRANSACTION AMOUNT
+    
+    // Load the address where the value is stored to a register
+    LDR r1, =transaction 
+    // Copy data from r0 to transaction 
+    STR r0, [r1] 
+    
+    // Check if transaction value is too high
+    // r0 is still the same as the value that transaction transaction points to, so compare r0 to r2 
+    CMP r0, 1000
+    // ERROR - If r0 is greater than 1000, branch to transaction_error
+    BGT transaction_error
+    
+    // Check if transaction value is too low
+    // r0 is still the same as the value that transaction transaction points to, so compare r0 to r2 
+    CMP r0, -1000
+    // ERROR - If r0 is less than -1000, branch to transaction_error
+    BLT transaction_error
+    
+    
+    // HAPPY PATH CONTINUES - TRANSACTION AMOUNT IS VALID
+       
+    // Initialize variable. Load the address where the value is stored to a register
+    LDR r3, =balance
+    LDR r4, [r3]
+    
+    // Add the balance and transaction and use the result to set r2 as the temporary balance
+    ADDS r2, r4, r0
+    
+    // ERROR - Branch to transaction_error if overflow occurred
+    BVS transaction_error
+    
+    
+    // HAPPY PATH CONTINUES - TRANSACTION IS SUCCESSFUL
+    
+    // Set balance to the result of the addition operation
+    LDR r2, [r3]
+    
+    
+    
+    
+    B done
+    /* END - PERFORM TRANSACTION */
+
+    
+/* START - ERRORS */
+  
+    
+// TRANSACTION ISSUE OCCURRED
+transaction_error:
+    // Set transaction (via r1) to 0
+    MOVS r2, 0
+    LDR r2, [r1]
+    
+    // set we_have_a_problem to 1
+    MOVS r2, 1
+    LDR r5, =we_have_a_problem
+    STR r2, [r5] 
+    
+    // Load value of balance (r3) to r0, per instructions
+    LDR r2, =balance
+    LDR r0, [r2]
+    
+    // The process flow ends
+    B done
+    
+    
+/* END - ERRORS */
+
+    
 
     
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
