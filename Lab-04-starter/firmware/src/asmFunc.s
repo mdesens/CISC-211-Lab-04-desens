@@ -114,15 +114,15 @@ asmFunc:
     STR r0, [r1] 
     
     // Check if transaction value is too high
-    // r0 is still the same as the value that transaction transaction points to, so compare r0 to r2 
-    CMP r0, 1000
-    // ERROR - If r0 is greater than 1000, branch to transaction_error
+    CMP r0, 1000    
+    /* ERROR - If r0 is greater than 1000
+    BRANCH - transaction_error */
     BGT transaction_error
     
     // Check if transaction value is too low
-    // r0 is still the same as the value that transaction transaction points to, so compare r0 to r2 
     CMP r0, -1000
-    // ERROR - If r0 is less than -1000, branch to transaction_error
+    /* ERROR - If r0 is less than -1000
+    BRANCH - transaction_error */
     BLT transaction_error
     
     
@@ -131,9 +131,11 @@ asmFunc:
     // Initialize variable. Load the address where the value is stored to a register
     LDR r3, =balance
     LDR r4, [r3]
+    LDR r5, =transaction
+    LDR r5, [r5]
     
-    // Add the balance and transaction and use the result to set r2 as the temporary balance
-    ADDS r2, r4, r0
+    // Add the balance and transaction (r5) and use the result to set r2 as the temporary balance
+    ADDS r2, r4, r5
     
     // ERROR - Branch to transaction_error if overflow occurred
     BVS transaction_error
@@ -141,41 +143,73 @@ asmFunc:
     
     // HAPPY PATH CONTINUES - TRANSACTION IS SUCCESSFUL
     
-    // Set balance to the result of the addition operation
-    LDR r2, [r3]
+    // Set balance (r3) to the result (r2) of the addition operation
+    STR r2, [r3]
     
+    // Check if the resulting balance is greater than 0
+    CMP r2, 0
     
+    /* BRANCH - If balance is greater than 0 */
+    BGT positive_balance
     
+    /* BRANCH - If balance is less than 0 */
+    BLT negative_balance
     
-    B done
+    // If balance equals 0
+    LDR r5, =eat_ice_cream
+    MOVS r2, 1
+    STR r2, [r5] 
+    B final_code
+    
     /* END - PERFORM TRANSACTION */
 
     
-/* START - ERRORS */
-  
+/* BRANCHES */
     
 // TRANSACTION ISSUE OCCURRED
 transaction_error:
-    // Set transaction (via r1) to 0
+    // Set transaction (via r1) to 0, per instructions
+    LDR r1, =transaction
     MOVS r2, 0
-    LDR r2, [r1]
+    STR r2, [r1]
     
-    // set we_have_a_problem to 1
+    // set we_have_a_problem to 1, per instructions
     MOVS r2, 1
     LDR r5, =we_have_a_problem
     STR r2, [r5] 
     
-    // Load value of balance (r3) to r0, per instructions
+    B final_code
+    
+    
+negative_balance:
+    // Set stay_in to 1 (true), per instructions
+    LDR r5, =stay_in
+    MOVS r2, 1
+    STR r2, [r5] 
+    
+    B final_code
+    
+positive_balance:
+    // Set eat_out to 1 (true), per instructions
+    LDR r5, =eat_out
+    MOVS r2, 1
+    STR r2, [r5] 
+    
+    B final_code
+    
+/* BRANCHES */
+
+    
+/* START - FINAL CODE - ALWAYS EXECUTE */
+final_code:
+    // Set r0 to the balance value, per instructions
     LDR r2, =balance
     LDR r0, [r2]
-    
+
     // The process flow ends
     B done
     
-    
-/* END - ERRORS */
-
-    
+/* END - FINAL CODE - ALWAYS EXECUTE */
 
     
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
