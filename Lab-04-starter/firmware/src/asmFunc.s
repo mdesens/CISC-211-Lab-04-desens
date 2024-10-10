@@ -76,7 +76,7 @@ asmFunc:
     
     // Initialize variable. Load the address where the value is stored to a register
     LDR r1, =transaction 
-    // Set r2 to the value, 0
+    // Set r2 to the value, 0, and use to initialize variales to 0
     MOVS r2, 0
     // Copy data from r2 to transaction 
     STR r2, [r1] 
@@ -110,19 +110,17 @@ asmFunc:
     
     // Load the address where the value is stored to a register
     LDR r1, =transaction 
-    // Copy data from r0 to transaction 
+    // Copy data from r0 to transaction, per instructions
     STR r0, [r1] 
     
     // Check if transaction value is too high
     CMP r0, 1000    
-    /* ERROR - If r0 is greater than 1000
-    BRANCH - transaction_error */
+    /* ERROR - If r0 is greater than 1000 - BRANCH */
     BGT transaction_error
     
     // Check if transaction value is too low
     CMP r0, -1000
-    /* ERROR - If r0 is less than -1000
-    BRANCH - transaction_error */
+    /* ERROR - If r0 is less than -1000 - BRANCH */
     BLT transaction_error
     
     
@@ -137,7 +135,7 @@ asmFunc:
     // Add the balance and transaction (r5) and use the result to set r2 as the temporary balance
     ADDS r2, r4, r5
     
-    // ERROR - Branch to transaction_error if overflow occurred
+    /* ERROR - If Overflow - BRANCH */
     BVS transaction_error
     
     
@@ -149,16 +147,17 @@ asmFunc:
     // Check if the resulting balance is greater than 0
     CMP r2, 0
     
-    /* BRANCH - If balance is greater than 0 */
+    /* If balance is greater than 0 - BRANCH */
     BGT positive_balance
     
-    /* BRANCH - If balance is less than 0 */
+    /* If balance is less than 0 - BRANCH */
     BLT negative_balance
     
-    // If balance equals 0
+    // If balance equals 0, set eat_ice_cream to 1 (true), per instructions
     LDR r5, =eat_ice_cream
     MOVS r2, 1
     STR r2, [r5] 
+    
     B final_code
     
     /* END - PERFORM TRANSACTION */
@@ -173,14 +172,14 @@ transaction_error:
     MOVS r2, 0
     STR r2, [r1]
     
-    // set we_have_a_problem to 1, per instructions
+    // set we_have_a_problem to 1 (true), per instructions
     MOVS r2, 1
     LDR r5, =we_have_a_problem
     STR r2, [r5] 
     
     B final_code
     
-    
+// THE BALANCE IS LESS THAN 0    
 negative_balance:
     // Set stay_in to 1 (true), per instructions
     LDR r5, =stay_in
@@ -189,6 +188,7 @@ negative_balance:
     
     B final_code
     
+// THE BALANCE IS GREATER THAN 0
 positive_balance:
     // Set eat_out to 1 (true), per instructions
     LDR r5, =eat_out
